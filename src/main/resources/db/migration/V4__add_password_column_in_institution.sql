@@ -1,0 +1,2 @@
+ALTER TABLE institutions
+ADD COLUMN password VARCHAR(255) NOT NULL;

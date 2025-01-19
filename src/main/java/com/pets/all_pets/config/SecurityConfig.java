@@ -14,7 +14,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    String  [] PUBLIC_URL = new String[]{"/customer/create", "/customer/login"};
+    String  [] PUBLIC_URL = new String[]{"/customer/create", "/customer/login", "/institution/create"};
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
