@@ -24,10 +24,13 @@ public class CustomerService  {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public void createCustomer(CustomerDTO customerDTO) {
+    public void  createCustomer(CustomerDTO customerDTO) {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+        if (customerDTO.getName() == null || customerDTO.getName().isEmpty() ) {
+            throw new CustomerValidationException("Name is required");
+        }
 
         if (!isEmailAlreadyRegistered(customerDTO.getEmail())) {
             CustomerModel customer = new CustomerModel();
@@ -42,12 +45,28 @@ public class CustomerService  {
             customerDTO.setToken(token);
             customerRepository.save(customer);
             customerDTO.setIdCustomer(customer.getIdCustomer());
-
+            LOG.info("Customer created successfully");
         }else {
+            LOG.error("Email already registered");
             throw new CustomerValidationException("Email already registered");
         }
 
     }
+
+    public CustomerDTO loginCustomer(String email, String password) {
+        CustomerModel customer = customerRepository.findByEmail(email);
+        if (customer != null) {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (passwordEncoder.matches(password, customer.getPassword())) {
+                return ProjectMAPPER.parseObject(customer, CustomerDTO.class);
+            } else {
+                throw new CustomerValidationException("Invalid password");
+            }
+        } else {
+            throw new CustomerValidationException("Invalid email");
+        }
+    }
+
 
     public Page<CustomerDTO> getAllCustomers(int page, int size) {
         if (size <= 0) {
@@ -102,11 +121,6 @@ public class CustomerService  {
             throw new CustomerValidationException("Customer not found for deletion");
         }
     }
-
-
-
-
-
 
     public boolean isEmailAlreadyRegistered(String email) {
         return customerRepository.existsByEmail(email);

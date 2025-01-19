@@ -71,6 +71,22 @@ public class CustomerController {
 
     }
 
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginCustomer(@RequestBody CustomerDTO customer) {
+        try {
+            CustomerDTO loggedCustomer = customerService.loginCustomer(customer.getEmail(), customer.getPassword());
+            return new ResponseEntity<>(loggedCustomer, HttpStatus.OK);
+        } catch (CustomerValidationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred."));
+        }
+    }
+
+
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<Object> deleteCustomerById(@PathVariable(value = "id") Integer id) {
         try {
