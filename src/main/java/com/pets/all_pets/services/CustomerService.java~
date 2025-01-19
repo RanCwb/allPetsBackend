@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -26,14 +25,11 @@ public class CustomerService  {
 
     public void createCustomer(CustomerDTO customerDTO) {
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-
         if (!isEmailAlreadyRegistered(customerDTO.getEmail())) {
             CustomerModel customer = new CustomerModel();
             customer.setName(customerDTO.getName());
             customer.setEmail(customerDTO.getEmail());
-            customer.setPassword(passwordEncoder.encode(customerDTO.getPassword()));
+            customer.setPassword(customerDTO.getPassword());
             customer.setPhone(customerDTO.getPhone());
 
             String token = JwtUtil.generateToken(customer.getEmail());
@@ -64,15 +60,12 @@ public class CustomerService  {
 
 
     public CustomerDTO updateCustomer(Integer id, CustomerDTO customer) {
-    Optional<CustomerModel> customerModel = customerRepository.findById(id);
-
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+        Optional<CustomerModel> customerModel = customerRepository.findById(id);
         if (customerModel.isPresent()) {
             CustomerModel updatedCustomer = customerModel.get();
             updatedCustomer.setName(customer.getName());
             updatedCustomer.setEmail(customer.getEmail());
-            updatedCustomer.setPassword(passwordEncoder.encode(customer.getPassword()));
+            updatedCustomer.setPassword(customer.getPassword());
             updatedCustomer.setPhone(customer.getPhone());
             customerRepository.save(updatedCustomer);
             return ProjectMAPPER.parseObject(updatedCustomer, CustomerDTO.class);
