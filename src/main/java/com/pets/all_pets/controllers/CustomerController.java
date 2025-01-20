@@ -59,16 +59,21 @@ public class CustomerController {
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable(value = "id") Integer id) {
+    public ResponseEntity<?> getCustomerById(@PathVariable(value = "id") Integer id,
+                                             @RequestHeader("Authorization") String authHeader) {
         try {
-            CustomerDTO customer = customerService.getCustomerById(id, null);
+            if (!authHeader.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid Authorization header");
+            }
+
+            String token = authHeader.substring(7);
+            CustomerDTO customer = customerService.getCustomerById(id, token);
 
             return new ResponseEntity<>(customer, HttpStatus.OK);
 
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-
     }
 
 

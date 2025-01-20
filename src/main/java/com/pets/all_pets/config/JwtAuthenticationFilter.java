@@ -1,5 +1,6 @@
 package com.pets.all_pets.config;
 
+import com.pets.all_pets.services.CustomerService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,12 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final CustomerService customerService;
+
+    public JwtAuthenticationFilter(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -30,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         email = JwtUtil.extractClaims(token).getSubject();
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (JwtUtil.validateToken(token, email)) {
+            if (JwtUtil.validateToken(token, email) && customerService.validateTokenInDatabase(email, token)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(email, null, null);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

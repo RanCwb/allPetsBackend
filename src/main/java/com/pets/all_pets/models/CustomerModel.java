@@ -2,6 +2,7 @@ package com.pets.all_pets.models;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Objects;
 
 @Entity

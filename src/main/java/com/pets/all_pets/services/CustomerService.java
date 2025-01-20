@@ -100,16 +100,19 @@ public class CustomerService  {
         }
     }
 
-    public CustomerDTO getCustomerById(Integer id, CustomerModel customer) {
-       Optional<CustomerModel> customerModel = customerRepository.findById(id);
+    public CustomerDTO getCustomerById(Integer id, String token) {
+        Optional<CustomerModel> customerModel = customerRepository.findById(id);
 
-       if (customerModel.isPresent()) {
-           return ProjectMAPPER.parseObject(customerModel.get(), CustomerDTO.class);
-       } else {
-           throw new CustomerValidationException("Customer not found");
-       }
-
-   }
+        if (customerModel.isPresent()) {
+            CustomerModel customer = customerModel.get();
+            if (!token.equals(customer.getToken())) {
+                throw new CustomerValidationException("Invalid token for this customer");
+            }
+            return ProjectMAPPER.parseObject(customer, CustomerDTO.class);
+        } else {
+            throw new CustomerValidationException("Customer not found");
+        }
+    }
 
     public CustomerDTO deleteCustomerById(Integer id, CustomerModel customer) {
         Optional<CustomerModel> customerModel = customerRepository.findById(id);
@@ -120,6 +123,12 @@ public class CustomerService  {
         } else {
             throw new CustomerValidationException("Customer not found for deletion");
         }
+    }
+
+
+    public boolean validateTokenInDatabase(String email, String token) {
+        Optional<CustomerModel> customer = Optional.ofNullable(customerRepository.findByEmail(email));
+        return customer.map(c -> token.equals(c.getToken())).orElse(false);
     }
 
     public boolean isEmailAlreadyRegistered(String email) {
