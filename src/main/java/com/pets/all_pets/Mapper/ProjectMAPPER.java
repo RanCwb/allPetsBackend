@@ -1,6 +1,7 @@
 package com.pets.all_pets.Mapper;
 
 import com.pets.all_pets.DTO.CustomerDTO;
+import com.pets.all_pets.DTO.InstitutionDTO;
 import com.pets.all_pets.models.CustomerModel;
 import org.modelmapper.ModelMapper;
 
@@ -23,5 +24,9 @@ public class ProjectMAPPER {
 
     public static CustomerDTO parseListObjectsDTO(CustomerModel customer, Class<CustomerDTO> customerDTOClass) {
         return modelMapper.map(customer, customerDTOClass);
+    }
+
+    public static InstitutionDTO mapToInstitutionDTO(InstitutionDTO institutionModel) {
+        return modelMapper.map(institutionModel, InstitutionDTO.class);
     }
 }

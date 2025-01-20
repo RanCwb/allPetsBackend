@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Table(name = "admin_users")
 public class AdminUserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

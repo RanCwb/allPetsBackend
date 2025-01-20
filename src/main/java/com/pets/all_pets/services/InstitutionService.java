@@ -2,6 +2,7 @@ package com.pets.all_pets.services;
 
 
 import com.pets.all_pets.DTO.InstitutionDTO;
+import com.pets.all_pets.Mapper.ProjectMAPPER;
 import com.pets.all_pets.config.JwtUtil;
 import com.pets.all_pets.models.InstitutionModel;
 import com.pets.all_pets.repository.InstitutionRepository;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class InstitutionService {
@@ -44,10 +47,33 @@ public class InstitutionService {
         } else {
             LOG.error("Email already registered");
             throw new RuntimeException("Email already registered");
+            }
+
+
+        }
+
+        public InstitutionDTO getInstitutionByIdl(Integer id, InstitutionDTO institutionDTO) {
+            Optional<InstitutionModel> institutionModel = institutionRepository.findById(id);
+
+            if (institutionModel.isPresent()) {
+                return ProjectMAPPER.parseObject(institutionModel.get(),InstitutionDTO.class);
+            } else {
+                throw new RuntimeException("Institution not found");
+            }
+        }
+
+        public InstitutionDTO deleteInstitutionById(Integer id, InstitutionDTO institutionDTO) {
+            Optional<InstitutionModel> institutionModel = institutionRepository.findById(id);
+            if (institutionModel.isPresent()) {
+                institutionRepository.delete(institutionModel.get());
+                LOG.info("Institution deleted successfully");
+                return ProjectMAPPER.parseObject(institutionModel.get(),InstitutionDTO.class);
+            } else {
+                throw new RuntimeException("Institution not found for deletion");
+            }
         }
 
 
-    }
 
         boolean isEmailAlreadyRegistered(String email) {
             return institutionRepository.existsByEmail(email);

@@ -63,11 +63,10 @@ public class InstitutionModel {
     public InstitutionModel() {
     }
 
-    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AdminUserModel> adminUsers;
 
-
-    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AnimalModel> animals;
 
 
@@ -152,6 +151,7 @@ public class InstitutionModel {
     }
 
     public void setIsPaying(Boolean isPaying) {
+        this.isPaying = isPaying;
     }
 
     public String getPassword() {
@@ -196,5 +196,9 @@ public class InstitutionModel {
     @Override
     public int hashCode() {
         return Objects.hash(idInstitution, cnpj, institutionName, responsibleName, responsiblePhone, password, email, address, isPaying, token, adminUsers, animals);
+    }
+
+    public Boolean getIsPaying() {
+        return isPaying;
     }
 }

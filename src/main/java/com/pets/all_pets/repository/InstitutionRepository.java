@@ -6,5 +6,5 @@ public interface InstitutionRepository extends JpaRepository<InstitutionModel, I
 
     boolean existsByEmail(String email);
 
-
+    InstitutionModel findByEmail(String email);
 }
