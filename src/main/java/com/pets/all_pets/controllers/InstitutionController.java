@@ -1,15 +1,10 @@
 package com.pets.all_pets.controllers;
-
-
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.pets.all_pets.DTO.InstitutionDTO;
 import com.pets.all_pets.services.InstitutionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Map;
 
 @RestController
@@ -33,7 +28,7 @@ public class InstitutionController {
     }
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<?> getInstitutionById(@Valid @PathVariable(value = "id") Integer id, InstitutionDTO institutionDTO) {
+    public ResponseEntity<?> getInstitutionById(@Valid @PathVariable(value = "id") Integer id, InstitutionDTO institutionDTO, @RequestHeader("Authorization") String authHeader) {
         try {
             InstitutionDTO institution = institutionService.getInstitutionByIdl(id, institutionDTO);
             return new ResponseEntity<>(institution, HttpStatus.OK);
@@ -42,6 +37,17 @@ public class InstitutionController {
                     .body(Map.of("error", e.getMessage()));
         }
 
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateInstitution(@Valid @PathVariable(value = "id") Integer id, @RequestBody InstitutionDTO institution) {
+        try {
+            InstitutionDTO updatedInstitution = institutionService.updateInstitution(id, institution);
+            return new ResponseEntity<>(updatedInstitution, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/deleteById/{id}")

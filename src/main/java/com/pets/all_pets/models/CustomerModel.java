@@ -115,4 +115,11 @@ public class CustomerModel implements Serializable {
     }
 
 
+    public CustomerModel orElse(Object o) {
+        return null;
+    }
+
+    public Object orElseThrow(Object userNotFound) {
+        return null;
+    }
 }

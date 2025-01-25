@@ -24,9 +24,11 @@ public class CustomerService  {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public void  createCustomer(CustomerDTO customerDTO) {
+    public void createCustomer(CustomerDTO customerDTO) {
+
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
         if (customerDTO.getName() == null || customerDTO.getName().isEmpty() ) {
             throw new CustomerValidationException("Name is required");
@@ -38,13 +40,13 @@ public class CustomerService  {
             customer.setEmail(customerDTO.getEmail());
             customer.setPassword(passwordEncoder.encode(customerDTO.getPassword()));
             customer.setPhone(customerDTO.getPhone());
-
-            String token = JwtUtil.generateToken(customer.getEmail());
-
-            customer.setToken(token);
-            customerDTO.setToken(token);
             customerRepository.save(customer);
             customerDTO.setIdCustomer(customer.getIdCustomer());
+
+            String token = JwtUtil.generateToken(customer.getEmail());
+            customer.setToken(token);
+            customerRepository.save(customer);
+
             LOG.info("Customer created successfully");
         }else {
             LOG.error("Email already registered");
@@ -52,21 +54,6 @@ public class CustomerService  {
         }
 
     }
-
-    public CustomerDTO loginCustomer(String email, String password) {
-        CustomerModel customer = customerRepository.findByEmail(email);
-        if (customer != null) {
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            if (passwordEncoder.matches(password, customer.getPassword())) {
-                return ProjectMAPPER.parseObject(customer, CustomerDTO.class);
-            } else {
-                throw new CustomerValidationException("Invalid password");
-            }
-        } else {
-            throw new CustomerValidationException("Invalid email");
-        }
-    }
-
 
     public Page<CustomerDTO> getAllCustomers(int page, int size) {
         if (size <= 0) {
@@ -106,7 +93,8 @@ public class CustomerService  {
         if (customerModel.isPresent()) {
             CustomerModel customer = customerModel.get();
             if (!token.equals(customer.getToken())) {
-                throw new CustomerValidationException("Invalid token for this customer");
+                LOG.error("Invalid TOKEN for this user");
+                throw new CustomerValidationException("Invalid CREDENTIALS");
             }
             return ProjectMAPPER.parseObject(customer, CustomerDTO.class);
         } else {
@@ -127,9 +115,10 @@ public class CustomerService  {
 
 
     public boolean validateTokenInDatabase(String email, String token) {
-        Optional<CustomerModel> customer = Optional.ofNullable(customerRepository.findByEmail(email));
+        Optional<CustomerModel> customer = customerRepository.findByEmail(email);
         return customer.map(c -> token.equals(c.getToken())).orElse(false);
     }
+
 
     public boolean isEmailAlreadyRegistered(String email) {
         return customerRepository.existsByEmail(email);

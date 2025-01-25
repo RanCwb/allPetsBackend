@@ -29,4 +29,6 @@ public class ProjectMAPPER {
     public static InstitutionDTO mapToInstitutionDTO(InstitutionDTO institutionModel) {
         return modelMapper.map(institutionModel, InstitutionDTO.class);
     }
+    
+
 }
