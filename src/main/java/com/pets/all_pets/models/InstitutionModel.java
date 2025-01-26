@@ -201,4 +201,9 @@ public class InstitutionModel {
     public Boolean getIsPaying() {
         return isPaying;
     }
+
+
+    public Object orElseThrow(Object userNotFound) {
+        return null;
+    }
 }

@@ -25,10 +25,7 @@ public class CustomerService  {
     private CustomerRepository customerRepository;
 
     public void createCustomer(CustomerDTO customerDTO) {
-
-
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
 
         if (customerDTO.getName() == null || customerDTO.getName().isEmpty() ) {
             throw new CustomerValidationException("Name is required");
@@ -40,9 +37,7 @@ public class CustomerService  {
             customer.setEmail(customerDTO.getEmail());
             customer.setPassword(passwordEncoder.encode(customerDTO.getPassword()));
             customer.setPhone(customerDTO.getPhone());
-            customerRepository.save(customer);
             customerDTO.setIdCustomer(customer.getIdCustomer());
-
             String token = JwtUtil.generateToken(customer.getEmail());
             customer.setToken(token);
             customerRepository.save(customer);
@@ -92,6 +87,8 @@ public class CustomerService  {
 
         if (customerModel.isPresent()) {
             CustomerModel customer = customerModel.get();
+            LOG.info("Token enviado: " + token);
+            LOG.info("Token esperado: " + customer.getToken());
             if (!token.equals(customer.getToken())) {
                 LOG.error("Invalid TOKEN for this user");
                 throw new CustomerValidationException("Invalid CREDENTIALS");

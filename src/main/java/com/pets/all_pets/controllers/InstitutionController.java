@@ -27,10 +27,16 @@ public class InstitutionController {
                     .body(Map.of("error", e.getMessage()));        }
     }
 
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<?> getInstitutionById(@Valid @PathVariable(value = "id") Integer id, InstitutionDTO institutionDTO, @RequestHeader("Authorization") String authHeader) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInstitutionById(@Valid @PathVariable(value = "id") Integer id, @RequestHeader("Authorization") String authHeader) {
         try {
-            InstitutionDTO institution = institutionService.getInstitutionByIdl(id, institutionDTO);
+            if (!authHeader.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid Authorization header");
+            }
+
+            String token = authHeader.substring(7);
+            InstitutionDTO institution = institutionService.getInstitutionById(id , token);
+
             return new ResponseEntity<>(institution, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

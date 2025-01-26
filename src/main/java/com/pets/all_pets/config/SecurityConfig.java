@@ -15,7 +15,8 @@ public class SecurityConfig {
 
         private static final String[] PUBLIC_ROUTES = {
          "/auth/**",
-         "customer/create", "/login"
+         "customer/create", "/login",
+               "/institution/create"
         };
 
     private final JwtAuthFilter jwtAuthFilter;
@@ -27,12 +28,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Configuração correta para desabilitar CSRF
-                .authorizeHttpRequests(auth -> auth // Configuração para autorização
-                        .requestMatchers(PUBLIC_ROUTES).permitAll() // Rotas públicas
-                        .anyRequest().authenticated() // Todas as outras rotas são privadas
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PUBLIC_ROUTES).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

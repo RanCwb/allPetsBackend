@@ -18,8 +18,8 @@ public class JwtUtil {
         if (jwtSecret == null || jwtSecret.length() < 32) {
             throw new IllegalArgumentException("JWT secret key must be at least 32 characters long.");
         }
-        this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        this.jwtExpiration = jwtExpiration;
+        secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        JwtUtil.jwtExpiration = jwtExpiration;
     }
 
     public static String generateToken(String email) {
